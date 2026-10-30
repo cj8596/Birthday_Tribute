@@ -72,7 +72,7 @@ h2{font-size:clamp(32px,6vw,62px);line-height:1.02;letter-spacing:-.065em;margin
 footer{text-align:center;padding:28px 15px 35px;color:#6f8199;font:9px 'DM Mono';letter-spacing:.16em;border-top:1px solid #ffffff12}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}.reveal.visible{opacity:1;transform:none}
 #confetti-layer{position:fixed;inset:0;z-index:99999;overflow:hidden;pointer-events:none;contain:layout paint}
-.confetti{position:absolute;top:-18px;width:7px;height:12px;display:block;pointer-events:none;will-change:transform,opacity;animation:fall 4s linear forwards}
+.confetti{position:absolute;top:-18px;width:5px;height:9px;display:block;pointer-events:none;will-change:transform,opacity;animation:fall 3s linear forwards}
 @keyframes fall{to{transform:translate3d(var(--drift,24px),110vh,0) rotate(720deg);opacity:0}}
 @media(max-width:760px){section{padding:88px 20px}.story-grid{grid-template-columns:repeat(2,1fr)}.story-card{min-height:178px}.profile{grid-template-columns:1fr;gap:38px}.profile-photo{max-width:330px}.status{display:none}}
 @media(max-width:380px){.story-grid{grid-template-columns:1fr}.story-card{min-height:145px}.hero h1{font-size:43px}}
@@ -134,6 +134,9 @@ img { max-width: 100%; height: auto; }
   .hint { margin-top: 7px; }
 }
 
+/* Consistent section landing: section edge sits directly beneath the fixed navigation */
+html { scroll-padding-top:54px; }
+section[id] { scroll-margin-top:54px; }
 /* PHONE-FIRST PRESENTATION: keep the experience intentionally optimized for a handset */
 html { width:100%; overflow-x:hidden; scroll-padding-top:64px; }
 body { width:100%; min-width:0; overflow-x:hidden; }
@@ -319,23 +322,21 @@ body:after {
 </main>
 <footer>BUILT WITH APPRECIATION&nbsp; / &nbsp;DEPARTMENT OF TECHNOLOGY&nbsp; / &nbsp;NMFC</footer>
 <script>
-function scrollToSection(id){
+function alignSectionBelowNav(id){
   const target=document.getElementById(id);
   if(!target)return;
-  const topbar=document.querySelector('.topbar');
-  const offset=(topbar ? topbar.getBoundingClientRect().height : 0)+10;
-  const top=target.getBoundingClientRect().top+window.scrollY-offset;
-  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
   target.classList.add('visible');
+  const topbar=document.querySelector('.topbar');
+  const navHeight=topbar ? Math.ceil(topbar.getBoundingClientRect().height) : 0;
+  const targetTop=target.getBoundingClientRect().top+window.scrollY;
+  const destination=Math.max(0,targetTop-navHeight-2);
+  window.scrollTo({top:destination,behavior:'smooth'});
+}
+function scrollToSection(id){
+  alignSectionBelowNav(id);
 }
 function openTransmission(){
-  const target=document.getElementById('mind');
-  if(!target)return;
-  const topbar=document.querySelector('.topbar');
-  const offset=(topbar ? topbar.getBoundingClientRect().height : 0)+10;
-  const top=target.getBoundingClientRect().top+window.scrollY-offset;
-  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
-  target.classList.add('visible');
+  alignSectionBelowNav('mind');
 }
 const story={
 vision:'<strong>THE VISION</strong><br>You see possibilities before they become reality. Your vision keeps our institution moving forward.',
@@ -397,20 +398,20 @@ function celebrate(){
   }
   message.textContent='✦ HAPPY BIRTHDAY, DENIS SIR! ✦';
   function burst(){
-    for(let i=0;i<24;i++){
+    for(let i=0;i<16;i++){
       const p=document.createElement('b');
       p.className='confetti';
       p.style.left=(Math.random()*100)+'%';
       p.style.background=palette[Math.floor(Math.random()*palette.length)];
-      p.style.width=(5+Math.random()*6)+'px';
-      p.style.height=(8+Math.random()*10)+'px';
+      p.style.width=(4+Math.random()*4)+'px';
+      p.style.height=(7+Math.random()*8)+'px';
       p.style.setProperty('--drift',(Math.random()*100-50)+'px');
-      p.style.animationDuration=(3.2+Math.random()*1.5)+'s';
+      p.style.animationDuration=(2.8+Math.random()*0.9)+'s';
       layer.appendChild(p);
       setTimeout(()=>p.remove(),5200);
     }
     if(Date.now()<endAt){
-      setTimeout(burst,180);
+      setTimeout(burst,260);
     }else{
       celebrationActive=false;
       message.textContent='WISHES TRANSMITTED WITH APPRECIATION.';
